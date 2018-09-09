@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "\n\nsource('0.MH_fb_functions.R')\n\n# to be put in preparation\nif (TRUE) {\n  lr_history = list()\n  la_original = la\n  lb_original = lb\n  obs = loc.d\n  \n  info_network$info_facility$begin[[1]] = 16\n  info_network$info_facility$begin[[2]] = 8    \n  info_network$info_facility$end[[1]] = 8\n  info_network$info_facility$end[[2]] = 16\n  max.person = unlist(lapply(la_original[[1]],function(x) length(x)))-1\n  R_min = max.person[1]*(-18)\n  RLITER = 5\n  VIITER = 1\n  t0 = 1\n  t0.max = 1441\n  \n  heavy_traffic = apply(loc.d,2,max)\n  names(heavy_traffic) = c(1:length(heavy_traffic))\n  heavy_traffic = rev(sort(heavy_traffic))\n  heavy_traffic = as.numeric(names(heavy_traffic[1:100]))\n  tmp_accum = sapply(1:length(action_list),function(n) {\n    length(action_list[[n]])-1\n  })\n  tmp_accum = cumsum(tmp_accum)\n  learnable = c()\n  for(i in heavy_traffic) {\n    learnable = c(learnable,tmp_accum[i-1]+1:(length(action_list[[i]])-1) )\n  }\n  \n  \n  action_scale = 1e3\n  state_scale = 10\n  input_state = heavy_traffic\n  output_state = learnable\n  tot_theta = 89241\n  \n  \n  \n  Xt_real = loc.d\n  train_x = cbind(Xt_real[1:1200,heavy_traffic],c(1:1200))\n  train_y = array(0,dim=c(nrow(train_x),length(learnable)))\n  \n  for(t0 in c(1:1200)) {\n    idx = trunc(t0/360)+1\n    theta = unlist(lapply(PpolicyUpdate[[idx]],function(x) x[-1]))\n    train_y[t0,] = theta[learnable]\n  }\n  train_y = train_y*action_scale*0.9\n  train_x = train_x/state_scale\n}\n\nsave.image(\"berlin.RData\")\n\n\n\n\n\n\n\n\n\n\n",
+    "created" : 1526663089464.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1481479827",
+    "id" : "F955EEDC",
+    "lastKnownWriteTime" : 1526664607,
+    "last_content_update" : 1526664607128,
+    "path" : "~/Documents/R/RL_VI_2018_NIPS/VI_RL8_a=v_berlin/debug.R",
+    "project_path" : "debug.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 5,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

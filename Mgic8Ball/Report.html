@@ -1,0 +1,249 @@
+<!-- HTML code adapted from http://people.ece.cornell.edu/land/courses/ece4760/FinalProjects/f2012/oaq3_cig23_rk447/oaq3_cig23_rk447/index.html
+   Hand-Motion Chess with Accelerometers by Omeo Quddus, Roland Krieger, and Cameron Glass -->
+
+<html>
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta http-equiv="Content-Language" content="en-us">
+<title>POV Magic 8 Ball</title>
+<link rel="stylesheet" type="text/css" media="all" href="./stylesheets/cornell.css">
+<link rel="stylesheet" type="text/css" media="all" href="./stylesheets/cornell2.css">
+<link rel="stylesheet" type="text/css" media="all" href="./stylesheets/main.css">
+<meta name="author" content="Fan Yang, Siyu Chen">
+<meta name="copyright" content="Copyright (c) 2013 Fan Yang, Siyu Chen">
+<meta name="description" content="A remote controlled persistence-of-vision (POV) display that is able to display multiple patterns based on remote input">
+<meta name="keywords" content="POV, remote, clock, microcontroller, ECE, 4760, Fan Yang, Siyu Chen, Cornell">
+</head>
+
+<body>
+<div id="header">
+  <!-- The following div contains the Cornell University logo and search link -->
+  <div id="cu-identity"> 
+		<div id="cu-logo"> 
+			<a href="http://www.ece.cornell.edu"><img src="./img/cu_logo.gif" alt="Cornell University" width="340" height="75" border="0" /></a>
+		</div> 
+  </div>
+  
+  <div class="linklist"> <a name="top"></a> </div>
+  <!-- The search-form div contains a form that allows the user to search 
+		either pages or people within cornell.edu directly from the banner.	-->
+  <div id="search-form">
+    <form action="http://www.cornell.edu/search/" method="get" enctype="application/x-www-form-urlencoded">
+      <div id="search-input">
+        <label for="search-form-query">SEARCH:</label>
+        <input type="text" id="search-form-query" name="q" value="" size="20">
+        <input type="submit" id="search-form-submit" name="submit" value="go">
+      </div>
+      <div id="search-filters">
+        <input type="radio" id="search-filters1" name="tab" value="" checked="checked">
+        <label for="search-filters1">Pages</label>
+        <input type="radio" id="search-filters2" name="tab" value="people">
+        <label for="search-filters2">People</label>
+        <a href="http://www.cornell.edu/search/">more options</a> </div>
+    </form>
+  </div>
+</div>
+
+<!-- The mainnav div contains links to jump to prominent sections in webpage -->
+<div id="mainnav">
+  <ul>
+    <li><a href="#design">High&nbsp;Level&nbsp;Design</a></li>
+    <li><a href="#hardware">Design</a></li>
+    <li><a href="#testing">testing</a></li>
+    <li><a href="#results">Results&nbsp; &&nbsp; Conclusion</a></li>
+    <li><a href="#appendices">Appendices</a></li>
+  </ul>
+</div>
+
+<div id="sectiontitle">
+  <h4><a href="http://people.ece.cornell.edu/land/courses/ece4760/">ECE 4760</a>: <a href="http://people.ece.cornell.edu/land/courses/ece4760/FinalProjects/">Final Project</a></h4>
+  <h1>POV Magic 8 Ball</h1>
+  <h3>Fan Yang (<a href="mailto:fy75@cornell.edu">fy75cornell.edu</a>)</h3>
+  <h3>Siyu Chen   (<a href="mailto:sc2564@cornell.edu">sc2564@cornell.edu</a>)</h3>
+</div>
+
+<div id="wrapper">
+	<div id="content">
+		<div id="maincontent" class="hub">
+			<h2>1.Introduction &nbsp;&nbsp;&nbsp;<font size="-1"><strong><a href="#top">top</a></strong></font></h2>
+			<div class="image"><a href="./img/hero_new.JPG"><img src="./img/hero_new.JPG" width="400" height="300"></a>
+
+			</div>
+			<p>In our final project of ECE 4760, we designed a magic 8  ball, which is a rotating POV (persistence of vision) display controlled by  voice commands. In our design, users can ask yes/no based questions via a small  speaker, and the rotating POV part can display random answer of yes or no to  answer that the question. The system works just as the traditional magic 8  ball, with the answer displaying on a sphere created by a series of rotating  LEDs and using the persistence of vision mechanism.  </p>
+    <p>A persistence of vision (POV) refers to the phenomenon of  the human eye in which an afterimage exists for a brief time (10 ms). A POV  display exploits this phenomena by spinning a one dimensional row of LED's  through a two dimensional space at such a high frequency that a two dimensional  display is visible. In our case, we created a sphere display by spinning  semi-circle shaped LEDs around a central motor shaft. The rotational speed of  the LED&rsquo;s is fast enough such that the human eye perceives a two dimensional  image.</p>
+    <p>The overall design of this project can be grouped in the  following three categories: circuit design, mechanical design, and software  design. The most labor intensive portion of this project was the mechanical  design and the circuit design. The circuit schematics and software design  should be integrated on the frame work of mechanical structure, which is the  most challenging part of our design implementation.</p>
+
+		    <a name="design"></a>
+			<h2>2.High Level Design &nbsp;&nbsp;&nbsp;<font size="-1"><strong><a href="#top">top</a></strong></font></h2>
+			<p>The original idea of our project came from a very popular  American sitcom in the 90s – Friends. In this show, we saw the magic 8 ball for  the very first time, and were amused by Ross asking it whether he should see  Rachel again. Being a huge fan of Friends and attracted to the idea of asking  questions to a magic ball to make complicated decisions, we decided to build  our electrical version of magic 8 ball, with which people ask questions via a  small speaker to the ball and get random answer displayed automatically. </p>
+    <p>The next step of our design was a series of brainstorming to  decide how the answer would be displayed. In our first scheme, a plastic ball  with a LCD screen embedded in it would be responsible for displaying answers. A  stepper motor would drive the plastic ball to spin when people starts to ask  questions and stop after people finishing the questions. In other words, our  first scheme is about voice commanding the motor spin or stop, while LCD  display random answer when motor stops. After a series of further discussion,  we quickly drop this scheme because we met several folds of skill limitation. First,  it is hard to embed a LCD screen to an integral plastic ball and fix a  microcontroller in such as small area. Second, it is also hard to synchronize  the motor and the LCD display, which means no good ways to tell the ball when  to display random answer if no electric components like a speed sensor or a  displacement sensor are employed to the system. To simply our design, we gave  up our first design scheme and adopted another display scheme, the POV display.</p>
+    <p>Using POV display helps us avoid several skill limitation  mentioned above. First, we don&rsquo;t need an entity version of ball to do the  display. Instead, we only need a series of semi-circle shaped LEDs rotating in  a central shaft to create the outline of the ball. Meanwhile, by lighting  certain LEDs, we can create the vision of displaying figures on a spherical  surface. Second, we don&rsquo;t need to employ such speed sensor or displacement  sensor as mentioned before, we only need an infrared emitter on the  non-rotating frame to send voice commands, and an infrared receiver on the  rotating part to receive commands. To fulfill these, we only need a circuit  board to serve as the rotating part, on which a series of semi-circle shaped  LEDs, speed measurement circuit, voice command receiver, a MCU and a battery  are embedded. In order to be able to drive the rotating circuit board, we need  a high-torque motor.   </p>
+    <p>The POV display logic behind our project is very  straightforward. Our software must calculate the rotations per second (RPS),  and set the time duration to display each &quot;pixel&quot; of the display  (explained in software section). From a high level design, we simply measure  the period of each rotation, divide time the central shaft takes to rotate  through that section by the number pixels we allow to display and then  calculate the amount of time each pixel occupies during the rotation. By turning  on a LED for just that duration of time, we can then display the pixel. There  are 19 LEDs consisting of the semi-circle, and we define two degree as a pixel  while figures are only allowed to display in 180 degree. Thus, we mapped the  entire display area to a 19 by 90 matrix where each element in the matrix  represents a pixel.</p>
+    <p>The nature of our design allows the software and hardware  design to be relatively independent of each other in terms of tradeoffs. However,  there do exist some cases in which hardware circuit design may affect the  stability of our software. For example, we have two infrared receivers on our  rotating circuit board: one to measure the speed and synchronize the display,  another to receive voice commands to display corresponding figures on the  spinning spherical surface. It is important that these two infrared emitter  commands from non-rotating frame should only give commands to its corresponding  receiver. </p>
+    <p>The system schematic diagram is shown in Figure 1. As we can  see from the diagram, two MCU has different responsibilities and cooperate  together to fulfill the entire function as a rotating POV display.    </p>
+    
+	<div class="image"><a href="./img/figure_oneA.JPG"><img src="./img/figure_oneA.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 1.A High level system schematic diagram</p>
+			</div>
+	<div class="image"><a href="./img/figure_oneB.JPG"><img src="./img/figure_oneB.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 1.B High level system schematic diagram</p>
+			</div>
+			
+			<a name="hardware"></a>
+			<h2>3. Design &nbsp;&nbsp;&nbsp;<font size="-1"><strong><a href="#top">top</a></strong></font></h2>
+			<h3>3.1  Mechanical Design</h3>
+    <p>Because we expect to rotate a serial of LED and  display figures in spherical surface, we need to fix both side of the board  containing the serial of LED (in case it shaking too heavily and affecting the  receiving of infrared signal). Besides, we need to fix two IR  transmitters, making the IR receivers on the rotating board receive a signal  per revolution. So we build a wood support for our POV, both used to fixed the  free end of the rotating board and to fix the IR transmitters. The picture of  our support is shown in Figure 2. The shaft we used to connect the upper end of  the rotating target board is shown in Figure 3.</p>
+	<div class="image"><a href="./img/figure_two.JPG"><img src="./img/figure_two.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 2 Wood Support for POV Display</p>
+			</div>
+			
+	<div class="image"><a href="./img/figure_three.JPG"><img src="./img/figure_three.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 3 Shaft and Connection</p>
+			</div>
+			
+		<p>We make two  small pieces of woods with hole in it, and paste these two pieces of woods to  both ends of the board containing the LED. One was connecting to the stepper  motor, and the other was connecting to a shaft which going through a hole in  the top board. One thing we need to make sure is that the shaft of the motor  should be in the exactly same position with the top hole of the board and the  shaft in the top. After doing these, we can guarantee the serial of LED can  rotate smoothly and receive the signal from infrared. </p>
+<h3>3.2 Hardware Design</h3>
+<h4>3.2.1 Motor</h4>
+<p>In our design, a motor is needed to drive the rotating part to  spin at around 10 RPS to achieve the best performance of POV display. Because  our rotating circuit board has a lot of electrical components embedded on, we  need a motor which can generate high torque. Besides, we also need our motor to  run at a constant speed, and if the load changes in a variable range, the motor  should still hold the constant speed. In our design, we can choose between  three types of motors: DC motor, AC motor, and a stepper motor.</p>
+<p>Because of the current/torque relationship: <div class="image"><a href="./img/index_clip_image002.png"><img src="./img/index_clip_image002.png" width="62" height="20"></a>
+</p>
+			</div><p>we cannot achieve very big  speed changes due to torque limitation. In other words, in order to meet the  criteria of torque generation to drive the rotating part, we have to slowly  ramp up the motor speed. For an AC motor, we have to use a voltage adaptor to  ramp up the input voltage, which means more hardware implemented. As for a DC  motor, instead of using PID control, we can simply apply a constant DC voltage  to achieve constant motor speed in condition of motor load not changing in a  wide range. As usual, we also have to slowly ramp up the input DC voltage to  meet the torque limitation. Both of the AC and DC motors require additional  hardware (such as voltage adaptor or regulator) to achieve input voltage ramp  up in order to slowly regulate the motor speed to rated value. So, we chose a stepper  motor, which makes us able to ramp up speed only using software. </p>
+</p>
+			<h4>Stepper Motor Hardware Implementation</h4>
+<p>We chose Vexta PK266-02A stepper motor because  it can generate the holding torque of up to 166 oz-in. Considering that our  rotating part is quite heavy and torque consuming, we also need to use this  stepper motor in bipolar mode, in which the coil is twice as the unipolar. And  we also adopted 50% control signals overlap to maximum the torque output. When  used in bipolar mode, the coil resistance for one phase is 4 ohms, and because  the rated current for one phase is 2A, so we need at least 8V voltage input.  With the speed of the motor increasing, the coil impedance also increases. So,  we need more than 8V voltage input. After several trials, we found out that a  24 volts output voltage with 2A rated current power supply can drive our  stepper motor to rotate at around 10 RPS. </p>
+<p>Another important issue about the hardware circuit  implementation is about control circuit, drive circuit, and the isolation  between them. Because we use the motor in bipolar mode, we need two H bridges  for both phases of the coil. We chose L298N model (shown in Figure 4) as the H  bridge drive-circuit in consideration that it can handle up to 2A  emitter/collector current when switched on. And it can handle up to 36V  collector-emitter voltage when switched off, which means it can be used in our  24 volts power supply. Note that the L298N model we bought has already had four  freewheeling diodes connected in antiparallel with each phase of the inductive load,  so we can safely use this model to drive a stepper motor and do not need to  worry about no current return path for the motor coil when the H-bridge is  switched off.</p>
+<div class="image"><a href="./img/figure_fourA.JPG"><img src="./img/figure_fourA.JPG" width="500" height="300"></a>
+
+			</div>
+<div class="image"><a href="./img/figure_fourB.JPG"><img src="./img/figure_fourB.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 4 L298N Module</p>
+			</div>
+<p>We used MCU C.0~C.3 port to output sequential control  signals for two phase of our stepper motor. It is important to isolate this  control circuit with the drive circuit of H bridge, because the drive circuit  may draw up to 2A current and if this high current couple to MCU control  circuit from common ground resistor, MCU pins may be destroyed. In our design,  we use 4N35 to isolate the control and drive circuit. Note that 4N35 has the  bandwidth limitation of 1K Hz, so the stepper motor has the speed limitation  coming from the restriction of control signal frequency. The schematic diagram  of our electric circuit design is shown in Figure 5. And the module diagram of control  circuit is shown in Figure 6.</p>
+<p>&nbsp;</p>
+<div class="image"><a href="./img/figure_five.JPG"><img src="./img/figure_five.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 5 Schematic Diagram of Motor Control</p>
+			</div>
+			<div class="image"><a href="./img/figure_six.JPG"><img src="./img/figure_six.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 6 Motor Control Circuit</p>
+			</div>
+<h4>Stepper Motor Software Implementation Overall</h4>
+<p>We need to generate four sequential control pulses to apply  on the four gates of the two H bridges, sequentially switching them on and off.  Each pulse is a step for the stepper motor. So for Vexta PK266-02A stepper  motor, which needs 200 step per revolution, we need to generate pulses of 500Hz  in order to make the stepper motor rotate at the speed of 10 RPS. The pulse  sequence is shown in Figure 7.</p>
+			<div class="image"><a href="./img/figure_seven.JPG"><img src="./img/figure_seven.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 7 Control Pulses for Stepper Motor</p>
+			</div>
+<p>Note that we overlap the pulse signals by 50% to achieve the  best bipolar torque performance. </p>
+<p>As discussed in the previous part, we can ramp up the motor  speed using only software. To be specific, we first start the pulse rate at a  very low frequency, and slowly ramp up the pulse rate to 500 Hz. The stepper  motor can then be driven smoothly. </p>
+<h4>3.2.2 Voice Detection</h4>
+<p>Our design should be able to recognize the existence of  voice. We do not need to detect the content of the speech, for that&rsquo;s a lot of software  work and can be very complicated due to algorithm complexity and unable to  resolve by the MCU. Instead, we only needed to distinguish between people  speaking and silence. We implemented our software to have a quite good noise  tolerance threshold, which means it can only regard it as valid speech input  only in condition that people talk to the microphone very close.</p>
+<p>Otherwise, the voice detector will regard any other  conditions as no voice input.</p>
+<h4>Audio Circuit Amplifier and Filter</h4>
+<p>The amplify circuit is shown in Figure 8. In our  design, we use a speaker to detect air vibrations. The microphone used in this  project uses a charged capacitor to detect vibrations in the air, and convert  the vibration signal to electrical signals. R2 and R3 provide a 2.5V DC voltage  bias for the output to allow the large waveform amplitude and convert the  original negative part of the waveform to positive. We used LM358 to work as  both voltage amplifier and band pass filter. We need a band pass filter because  we only need the fundamental component of human voice, which is below 300 Hz.  The output voltage of microphone is amplified by 100 times using LM358 negative  feedback. The output of the amplifier will be fed to ADC converter of MCU and  being analyzed. </p>
+			<div class="image"><a href="./img/figure_eightA.JPG"><img src="./img/figure_eightA.JPG" width="500" height="300"></a>
+
+			</div>
+			<div class="image"><a href="./img/figure_eightB.JPG"><img src="./img/figure_eightB.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 8 Voice Detection Circuit</p>
+			</div>
+<h4>3.2.3 Rotating POV circuit</h4>
+<p>We use a circuit board as a frame of our rotating POV circuit.  A series of LEDs in semi-circle shape, and two infrared receivers with  corresponding Schmitt Trigger should be soldered on that target board. Besides,  the rotating board should also include a MCU, and a battery as power supply.</p>
+<p>We used 19 LEDs in our design. Because of the constraining  of the Atmega1284 current, which should be less than 100mA in total, we connected  each LED with a 1K ohm resister to 19 different pin of the microcontroller (All  A ports and C ports, and B.0~B.2). Because we expect the rotation of our LED  looks like a sphere, we arrange the LED to be a semi-circle. This means that  the length of each LED should not be the same. Figure 9 shows the LED array  implementation.</p>
+			<div class="image"><a href="./img/figure_nine.JPG"><img src="./img/figure_nine.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 9 LED array on rotating target board</p>
+			</div>
+<p>We made it by firstly draw a circle, and then separate it to  19 parts, calculating the length of each parts, thus the length of each LED.  Both ends of the LED are pretty easy to make. We simply cut the LED to be the  fit length. But when it comes to the middle, we solder the LED which are not  long enough to wires and then to the board. We also paste these LED to a piece  of wood for supporting.</p>
+<p>We use two sets of infrared transmitter &amp; receiver in  our design. For both of them, transmitters were fixed on the wood support, and  the receivers were soldered on target circuit board, rotating with LED display.  One of the infrared transmitter &amp; receiver set is used to synchronize the  motor speed and the rotating display position. Another infrared transmitter &amp;  receiver set is used to give voice command to rotating circuit board. The  schematic diagram of infrared transmitter &amp; receiver set we used is shown  in Figure 10. In the diagram, the LTE4208 was fixed in the wood support, while  the LER4206 and corresponding peripheral circuit was soldered on rotating  circuit board. We use one LM358, connecting one receiver to the port 3, and  another receiver to port 5. Then, the output ports 1 and 7 are connected to  port D2 and D3, which are both external interrupt input of the microcontroller,  respectively.</p>
+			<div class="image"><a href="./img/figure_tenA.JPG"><img src="./img/figure_tenA.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 10.A Infrared transmitter</p>
+			</div>
+			<div class="image"><a href="./img/figure_tenB.JPG"><img src="./img/figure_tenB.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 10.B Infrared transmitter</p>
+			</div>
+			<div class="image"><a href="./img/figure_tenC.JPG"><img src="./img/figure_tenC.JPG" width="500" height="300"></a>
+
+			</div>
+			<div class="image"><a href="./img/figure_tenD.JPG"><img src="./img/figure_tenD.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 10.C Infrared Transmitter on wood support</p>
+			</div>
+<h3>3.3 Software Design</h3>
+<p>In our design, we use two MCU: one of them is static  (referred as static MCU below), and another one is rotating with the rotating  circuit board (referred as rotating MCU below). The static MCU is used to  generate sequential pulses to control the stepper motor, processing voice  detector&rsquo;s output signal using AD converter, generate voice command signal, and  supply 5V voltage to the speed synchronization infrared transmitter. The  rotating MCU is used to control the POV display. These two parts of MCU program  are quite independent.</p>
+<h4>Static MCU Program</h4>
+<p>The static MCU is responsible for controlling the stepper  motor and do AD conversion to process the analog signal of microphone circuit and  generate corresponding control signal (C.4 as shown in Figure 10.B) as voice  commands. The static MCU should also supply power for the infrared transmitter  which is used to synchronize the motor speed and the position of the POV  display.</p>
+<p>In our program, we use C.0 ~ C.3 to generate four sequential  pulses to control the stepper motor. We use Timer 0 compare match interrupt to  generate a time-base, and generate pulses in width of 86 time-base long. Note  that we need to ramp up the motor speed very slowly in order to meet the torque  limitation, so we firstly set every pulse width to be 200 time-base long. Then,  we gradually reduce the pulse width until the desired speed. All the pulse  generation and ramping are done in TIMER 0 COMPA interrupt. </p>
+<p>We also use C.4 port as voice commands, supplying output  voltage to one of the infrared transmitter. We define C.4 output logic 1 as no  valid voice detected and define C.4 output logic 0 as valid voice detected. And  the C.4 output should also remain 0 if people aren&rsquo;t finishing their speaking  but pause a little bit in the middle. In another word, our software should  process the analog voltage output of the microphone circuit, generating  corresponding binary voice command (0 as voice, 1 as no voice) and be applied  to one of the infrared transmitter. The software should be able to have a noise  tolerant threshold, which means it can only detect people speak to the  microphone very close as valid voice input and regard other situation as  environment noise. Besides, the software should also distinguish between pause  of the speech and the actual finishing of the speech. </p>
+<p>We use AD converter channel 0 (A.0 pin) to convert analog  voltage between 0 and 5 V to corresponding 8 bits integer. We set around 1.5  seconds of time to detect the biggest and smallest integer and do reduction. If  the difference is bigger than 80, we recognize that we have a valid voice  input, otherwise, we regard it as no valid voice input.  By adopting this method, we can achieve both  noise tolerance feather and distinguishing between pause and actual finish of a  speech. </p>
+<h4>Rotating MCU Program</h4>
+<p>We achieve POV by rotating a serial of LEDs, turning on and  off these LED in different positions. If the rotation speed is fast enough,  these LED will look no longer a serial of LEDs, instead being a sphere. So if  we want it to display image with these LEDs, we only need to decide in which  position of the rotating do we need to turn on the corresponding LEDs. </p>
+<p>In the initial part of our code, we initialize the interrupt  for timer0 and timer1, the ports for LED, and initialize there array for  displaying &lsquo;8&rsquo;, &lsquo;yes&rsquo; and &lsquo;no&rsquo;. Each of the elements in these arrays is a  19-bit binary number, with each bit representing one LED. And the size of these  arrays varies according to how many degrees do we want to display figures. </p>
+<p>In main function, we first execute the initial function, and  then stay in while(1) loop waiting for interrupts.</p>
+<p>We combine TIMER2_OVFL_vect interrupt and INT1_vect  interrupt to calculate the time for every revolution. In INT1_vect interrupt,  we receive the signal of measuring the rotation speed and calculating the time  it needs per cycle, then divide it to 180, the result being the time it needs  per 2 degrees. Then we set OCROA to match the time for 2 degrees and set  &lsquo;ledPos&rsquo; to 0 which will be used in the next interrupt. In this interrupt, we  should also read the corresponding port for voice commands input and decide  whether to display the figure &lsquo;8&rsquo; or the random answer of &lsquo;yes&rsquo; or &lsquo;no&rsquo;. We use  random number generation function rand() to generate a random number, and  display &lsquo;yes&rsquo; if it is an even number while display &lsquo;no&rsquo; if it is an odd  number.</p>
+<p>In TIMER0_COMPA_vect interrupt, we add 1 to &lsquo;ledPos&rsquo; every  time entering this interrupt. Because we want to display the image in the  middle, we need to carefully deal with the start position. With many practice,  we find that we should &lsquo;cut&rsquo; the first 60 degrees. Thus, we need to not turn on  the LEDs until &lsquo;ledPos&rsquo; larger than 30. Because we use the &lsquo;ledPos&rsquo; as the  index of the element of the array displaying images mentioned before,  consequently, we need to decrease the index by 30. And we assign the 19bit of  the element of the array to PORTA, PORTB, and PORTC. After all the images are  displayed, we need to set PORTA, PORTB and PORTC to 0 again, which turn off  these LEDs.  </p>
+
+<a name="testing"></a>
+<h2>4. Testing </h2>
+<p>We mainly adopted incremental design methodology in our  final project. Because our project can be divided into two independent parts:  the static part and rotating part, we can implemented them separately and after  verifying that each part is functionally correct, we can then assemble them  together and make them work as an entirety. </p>
+<h3>Testing for Static Part</h3>
+<p>We first wrote the code to drive the motor. In this period,  we realized that we need a 24V power supply to drive the motor and guarantee  the 2A rated current in order to generate enough holding torque. Besides, we  also found out that the ramping parameter should be deliberately set and tested  to make the motor start to spin smoothly. After we successfully run the motor,  we tested its holding torque. It turned out that it can drive our target board  at around 10 RPS and that&rsquo;s still beyond its torque limitation, so when loaded,  the motor kept running very smooth, without any situation of escaping phases or  rough vibration happening. </p>
+<p>Secondly, we tested the voice detector circuit. It turned  out that the amplifier works well and can output voltage between 0 and 5V in  correspond with voice magnitude. Then, we fed the output of the amplifier to  MCU pin A.0, which is the ADC input channel one, and tested our code for binary  voice commands generation. It took us several trials to decide the appropriate  noise &amp; valid voice input threshold as well as the number of sampling in  one comparing cycle. By using oscilloscope, we finally verified that our voice  detector circuit cooperate our ADC processing code can generate good noise  tolerant binary voice commands with good distinguish between pulse and finish  of a speech.  </p>
+<h3>Testing for Rotating Part</h3>
+<p>We first tested our on-board schmitt triggers to guarantee  no false edge trigger. Then we tested our wire connection of the LED array and wrote  code to make sure every LED can be lit and turned off correctly. Another  important issue we should test is the sequence of the two infrared receivers  capturing corresponding transmitter signals. Basically, because we read the  voice command value in speed measurement interrupt (INT 1), we need to  guarantee that the rotating part has already received voice commands when speed  measurement interrupt being triggered. After these basic verifications, we started  to test our POV display code.</p>
+<p>First of all, we wrote basic POV code, letting the rotating  LED array only display the figure &lsquo;8&rsquo;. This means we don&rsquo;t need to include any voice  commands both in hardware and in software. Second, we added voice commands to  our design and debugged for proper response with different voice input. One  important issue in debugging is that we should avoid the interference of two  infrared transmitter &amp; receiver set. In other words, we should make sure  the IR receiver used for speed &amp; position synchronization can only receive  commanding signals from its own IR transmitter. Basically, what we have done to  guarantee this signal separation is simply use black plastic to block IR  receiver from one of the IR transmitter. </p>
+<p>For our final project, the software is quite straightforward  and simple. The most testing job we did is about hardware verification and  hardware &amp; software collaboration. Meanwhile, it should also be taken into  consideration that the mechanical structure of our design should guarantee the  stability of software &amp; hardware. For example, we firstly did not fix the  upper end of the rotating target board to the wood support and made it a free  end while rotating. However, in our software debugging, we found out that when the  stepper motor started to run at a high speed (8 RPS or higher), the unfixed  free end started to sway in a wide range, causing the IR receiver cannot receive  control signals from corresponding IR transmitter. So, we altered in our  mechanical structure, fixing the free end of the rotating board using a shaft  and connecting it to the wood support through a hole.         </p>
+
+<a name="results"></a>
+<h2>5. Result &amp; Conclusion &nbsp;&nbsp;&nbsp;<font size="-1"><strong><a href="#top">top</a></strong></font></h2>
+
+<p>Our final project uses POV to display figures on a spherical  surface. It can fulfill the function of a simple version magic 8 ball. When  people start to ask it questions, it display an &lsquo;8&rsquo;, and when the microphone  detected the end of the question, our device will display a random answer of  &lsquo;yes&rsquo; or &lsquo;no&rsquo;. Our device can run very stable, the POV synchronization is good,  so the figures we display can keep steady and the edges of the figure never  move. Another feature about our device is that the LED array can generate quite  bright light, people can see the display without having to turn off the light.</p>
+<p>The display result of our device is shown in Figure 11.</p>
+			<div class="image"><a href="./img/figure_ele.JPG"><img src="./img/figure_ele.JPG" width="500" height="300"></a>
+			    <p class="caption">Figure 11 POV Display of an '8'</p>
+			</div>
+	
+			
+			
+			
+
+			<a name="appendices"></a>
+			<h2>6.Appendices &nbsp;&nbsp;&nbsp;<font size="-1"><strong><a href="#top">top</a></strong></font></h2>
+			<h4>A. Program Listing</h4>
+			<ul>
+			<li><a href=".\src\POV_code.c">POV_code.c</a> (11 KB)</li>
+			<li><a href=".\src\MotorVoice_code.h">MotorVoice_code.h</a> (4 KB)</li>	
+			</ul>
+			<h4>B. Division of Labor</h4>
+			<div class="image"><a href="./img/graph_two.JPG"><img src="./img/graph_two.JPG" width="732" height="160"></a>
+
+			</div>
+
+			<h4>C. Budget</h4>
+			<div class="image"><a href="./img/graph_one.JPG"><img src="./img/graph_one.JPG" width="732" height="384"></a>
+
+			</div>
+			
+			<h4>D. References</h4>
+			
+			<h4><a href="http://people.ece.cornell.edu/land/courses/ece4760/">ECE-4760 Webpage</a></h4>
+<h4><a href="http://people.ece.cornell.edu/land/courses/ece4760/AtmelStuff/mega1284full.pdf">AT mega 1284 Datasheet</a></h4>
+<h4><a href="https://skydrive.live.com/view.aspx?resid=88FB603BF7956247!246&app=WordPdf&wdo=2&authkey=!ACEKJTnpCdWAjOg">User Manual of L298N Module</a></h4>
+<h4><a href="http://www.velmex.com/pdf/mc/vexta-nema23-motors.pdf">Vexta PK266-02A datasheet</a></h4>
+
+			
+        	
+	<!-- content out -->
+  <hr>
+  <!-- footer in -->
+  <div id="footerwrap">
+    <div id="footer">
+      <div id="copyright">
+        <div class="copyright">&copy;2013 Fan Yang, Siyu Chen</div>
+        <div class="copyright">Layout &copy;2010 Cornell University</div>
+      </div>
+    </div>
+    <!-- end footer -->
+  </div>
+  <!-- end footerwrap -->
+  <!-- footer out -->
+
+</div>
+
+</body>
+</html>

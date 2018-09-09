@@ -1,0 +1,32 @@
+# Makefile1
+
+CC=llvm-g++
+#CC=g++
+CFLAGS= -std=c++11
+LFLAGS= -g
+
+#CC=arm-linux-gnueabihf-g++
+#CFLAGS=-c
+#LFLAGS=-static -o3
+
+CXXFLAGS = -O2 -lm -lpthread -I/usr/X11R6/include -L/usr/X11R6/lib -lm -lpthread -lX11
+
+all: int_img 3dbenchslicing 3dbenchpathplanning 3dbenchsupportgeneration
+
+int_img: ofs.cc int_image.cc
+	$(CC) $(LFLAGS) $(CXXFLAGS) ofs.cc int_image.cc -o int_img
+
+3dbenchslicing: ofs.cc slicing.cc
+	$(CC) $(LFLAGS) ofs.cc slicing.cc -o 3dbenchslicing
+
+3dbenchpathplanning: ofs.cc pathp.cc
+	$(CC) $(LFLAGS) ofs.cc pathp.cc -o 3dbenchpathplanning
+
+3dbenchsupportgeneration: ofs.cc supportg.cc
+	$(CC) $(CFLAGS) $(LFLAGS) ofs.cc supportg.cc -o 3dbenchsupportgeneration
+
+image: image.cc
+	$(CC) $(CXXFLAGS) image.cc -o image
+
+clean: 
+	rm 3dbenchslicing 3dbenchpathplanning 3dbenchsupportgeneration

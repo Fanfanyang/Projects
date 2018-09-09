@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "\nsource('0.MH_fb_functions.R')\n\n\n\n\n\n\n\n\n\n# compute rewards\nstart.time = 1\nend.time = 1200\ntd_init = 230\nlr_accum = 0\nfor(tt in start.time:(end.time-1)) {\n  if (tt %% 100 == 0) print(tt)\n  lr = RewardFunction(max.person, tt+td_init, locations, action_list, info_network)\n  lr_l = unlist(sapply(c(1:length(locations)),function(n) lr[[n]][loc.d[tt,n]+1]))\n  lr_accum = lr_accum + sum(lr_l/length(locations)/(end.time-start.time))\n}\n\n\n\n\n",
+    "created" : 1526580324019.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2631280652",
+    "id" : "4DD47572",
+    "lastKnownWriteTime" : 1526581192,
+    "last_content_update" : 1526581193001,
+    "path" : "~/Documents/R/RL_VI_2018_NIPS/VI_RL8_a=v_berlin/plot.R",
+    "project_path" : "plot.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

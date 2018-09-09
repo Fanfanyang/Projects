@@ -1,0 +1,13 @@
+# Makefile1
+
+CC=arm-linux-gnueabihf-g++
+#CFLAGS=-c
+LFLAGS=-static -o3
+
+all: 3dbenchslicing
+
+3dbenchslicing: slicing_algorithm2.cc
+	$(CC) $(LFLAGS) slicing_algorithm2.cc -o 3dbenchslicing
+
+clean: 
+	rm 3dbenchslicing

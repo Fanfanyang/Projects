@@ -1,0 +1,18 @@
+
+#time: 181->360, 5 iters, 10 trajectories
+
+updated work on time percetage : 0.315000
+ updated work on time percetage : 0.330500
+ updated work on time percetage : 0.368500
+ updated work on time percetage : 0.436000
+ updated work on time percetage : NA
+updated average time on road h->w : 38.380205
+updated system reward: -7.251689e+00
+
+original work on time percetage : 0.203000
+ original work on time percetage : 0.205450
+ original work on time percetage : 0.212100
+ original work on time percetage : 0.226950
+ original work on time percetage : NA
+original average time on road h->w : 42.721654
+original system reward: -2.174200e+03

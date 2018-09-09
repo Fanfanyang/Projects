@@ -1,0 +1,12 @@
+# Makefile1
+
+CC=g++
+LFLAGS= -static -o3
+
+all: 3dbenchpathplanning
+
+3dbenchpathplanning: clipper.cpp pathp_algorithm2.cc
+	$(CC) $(LFLAGS) clipper.cpp pathp_algorithm2.cc -o 3dbenchpathplanning
+
+clean: 
+	rm 3dbenchpathplanning

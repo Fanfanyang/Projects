@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "\n#load from prep1\nif (TRUE) {\n  rm(list=ls())\n  load('data_result1/m.time.RData')\n  load('data_result1/Xt_real.RData')\n  load('data_result1/person.state.d.RData')\n}\n\n#data\nif (TRUE) {\n  loc.d=Xt_real\n}\n\n#values\nif (TRUE) {\n  locations=colnames(m.time)\n  \n  #only consider neighbors\n  rate_in=list()\n  rate_out=list()\n  loc_in=list()\n  loc_out=list()\n  \n  for(i in 1:dim(m.time)[3]){\n    m=m.time[,,i]\n    diag(m)=0\n    rownames(m)=1:nrow(m)\n    colnames(m)=1:ncol(m)\n    rate_in[[i]]=lapply(1:ncol(m), function(n) {\n      m[,n][m[,n]!=0]\n    })\n    loc_in[[i]]=lapply(1:ncol(m), function(n) {\n      as.integer(names(rate_in[[i]][[n]]))\n    })\n    rate_out[[i]]=lapply(1:ncol(m), function(n) {\n      m[n,][m[n,]!=0]\n    })\n    loc_out[[i]]=lapply(1:ncol(m), function(n) {\n      as.integer(names(rate_out[[i]][[n]]))\n    })\n  }\n  \n  rate_in_f=function(i) rate_in[[ceiling(i/(nrow(loc.d)/length(rate_in)))]]\n  rate_out_f=function(i) rate_out[[ceiling(i/(nrow(loc.d)/length(rate_out)))]]\n  loc_in_f=function(i) loc_in[[ceiling(i/(nrow(loc.d)/length(loc_in)))]]\n  loc_out_f=function(i) loc_out[[ceiling(i/(nrow(loc.d)/length(loc_out)))]]\n  \n  #only main links are observable\n  observable=c(3,22) # setdiff(dimnames(obs.prob)$location,c(\"h\",\"w\"))\n  unobservable=setdiff(1:length(locations),observable)\n  observable_nominal=as.character(observable)\n  \n  maxloc.d=apply(loc.d,2, max )\n  max.person=ifelse(maxloc.d<=10,maxloc.d+5,maxloc.d+10)\n  #max.person=apply(loc.d,2, max )\n  #max.person[] = max(max.person)+5\n  \n  dataempty=lapply(1:nrow(loc.d), function(n){\n    lapply(1:length(locations), function(m){\n      rep(1,max.person[m]+1)\n    })\n  })\n  \n  sliceempty=lapply(1:length(locations), function(m){\n    rep(0,max.person[m]+1)\n  })\n  \n  start=sliceempty\n  for( i in 1:length(locations)) start[[i]][loc.d[1,i]+1]=1\n  \n  end=sliceempty\n  for( i in 1:length(locations)) end[[i]][loc.d[nrow(loc.d),i]+1]=1\n  \n  la=dataempty\n  la[[1]]=start\n  lb=dataempty\n  lb[[1441]]=end\n  \n  # change by Fan Yang, lb end dont know? To be done\n  #lb[[length(lb)]]=end\n  \n  lg=la\n  for(i in 1:length(lg)){\n    lg[[i]]=lapply(1:length(locations), function(n) la[[i]][[n]]*lb[[i]][[n]]/sum(la[[i]][[n]]*lb[[i]][[n]]))\n  } \n  \n  attr(la,'t') =attr(lb,'t') = attr(lg,'t') = 1:nrow(loc.d)\n  attr(la,'c')=\"a\"\n  attr(lb,'c')=\"b\"\n  attr(lg,'c')=\"a\"\n}\n\n#functions\nif (TRUE) {\n  alloc = function(x){\n    old.t = attr(x,'t')\n    old.c = attr(x,'c')\n    if(length(attr(x, 't'))==length(x)) length(x) = length(x)*2 #alloc memory\n    attr(x,'t') = old.t\n    attr(x,'c') = old.c\n    x\n  }\n  \n  # read a slice from filtration, previous nearest one\n  getSlice <- function(x, t ){\n    tt = attr(x, 't')\n    \n    if(attr(x,'c')==\"a\"){\n      t0 = which(tt==max(tt[tt<=t]))\n      y=x[[t0]]\n    }\n    if(attr(x,'c')==\"b\"){\n      t0 = which(tt==min(tt[tt>=t]))\n      y=x[[t0]]\n    }\n    y\n  }\n}\n\n#save data\nif (TRUE) {\n  remove(list = setdiff(ls(),c('lg','loc.d','rate_in',\n                               'rate_out','rate_in_f','rate_out_f',\n                               'loc_in','loc_out','loc_in_f','loc_out_f',\n                               'la','lb','m','m.time','max.person','observable_nominal',\n                               'unobservable','observable','alloc','getSlice','locations',\n                               'Xt_real','person.state.d'\n                               )))\n  \n  save.image(file = \"data_result2/inference_1_synthtown.RData\")\n}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "created" : 1525974724705.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2982266776",
+    "id" : "6DD5EA26",
+    "lastKnownWriteTime" : 1525983370,
+    "last_content_update" : 1525983370401,
+    "path" : "~/Documents/R/RL_VI_2018_NIPS/vi_prep3_50_a=v/prep2_1_pf_vi.R",
+    "project_path" : "prep2_1_pf_vi.R",
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "/*************************************************************************\n\t> File Name: rcpp_try1.cpp\n\t> Author: \n\t> Mail: \n\t> Created Time: Thu Jun 16 20:44:35 2016\n ************************************************************************/\n\n#include<iostream>\n#include <Rcpp.h>\n// [[Rcpp::depends(RcppEigen)]]\n\n#include <RcppEigen.h>\n\nusing namespace std;\nusing namespace Rcpp;\n\n// [[Rcpp::export]]\nNumericMatrix PossibleAction(NumericVector sinto, NumericVector sinfrom, int facility_length) {\n  int size1 = sinto.size();\n  int size2 = sinfrom.size();\n  int i,j;\n  int inx = 0;\n  NumericMatrix result(156430,2);\n  for(i=0;i<size1;i++) {\n    if (i < facility_length) {\n      result(inx,0) = i+1;\n      result(inx,1) = i+1;\n      inx++;\n      for(j=facility_length;j<size2;j++) {\n        if (sinto(i)==sinfrom(j)) {\n          result(inx,0) = i+1;\n          result(inx,1) = j+1;\n          inx++;\n        }\n      }\n    } else {\n      for(j=0;j<size2;j++) {\n        if (sinto(i)==sinfrom(j)) {\n          result(inx,0) = i+1;\n          result(inx,1) = j+1;\n          inx++;\n        }\n      }\n    }\n  }\n  Rcout << \"total actions: \" << inx << endl;\n  return result;\n}\n\n// [[Rcpp::export]]\nList PolicyList(NumericVector person_state_d, NumericVector person_state_d_1, List policy_template, List action_list, float SmallProb) {\n  \n  int size = person_state_d.size(), listsize = policy_template.size();\n  NumericVector tmp1,tmp2;\n  int i,j;\n  List result(listsize);\n  //result = policy_template;\n  for(i=0;i<listsize;i++) {\n    tmp1 = policy_template[i];\n    NumericVector tmp3(tmp1.size());\n    for(j=0;j<tmp3.size();j++) {\n      tmp3(j) = SmallProb; \n    }\n    result[i] = tmp3;\n  }\n  //Rcout << \"begin\" << endl;\n  for(i=0;i<size;i++) {\n    tmp1 = action_list[person_state_d(i)-1];\n    tmp2 = result[person_state_d(i)-1];\n    //Rcout << \"i: \" << i << \" \" << person_state_d_1(i) << \" tmp1: \" << tmp1 << endl;\n    for (j=0;j<tmp1.size();j++) {\n      //Rcout << \"j \" << j << \" tmp2 \" << tmp2 << endl;\n      if (tmp1(j)==person_state_d_1(i)) {\n        tmp2(j)++;\n        result[person_state_d(i)-1] = tmp2;\n        //Rcout << \"this run end\" << endl;\n        break;\n      }\n    }\n  }\n  \n  return result;\n}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "created" : 1478108191615.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3074338231",
+    "id" : "57ED0B59",
+    "lastKnownWriteTime" : 1478920015,
+    "last_content_update" : 1478920015731,
+    "path" : "~/Documents/R/RL_DrivePlan_0/Berlin/bench_berlin5_100/rcpp_prep_rl.cpp",
+    "project_path" : "rcpp_prep_rl.cpp",
+    "properties" : {
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "cpp"
+}

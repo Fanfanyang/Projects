@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "library(ggplot2)\nlibrary('Matrix')\nrequire('TTR')\nrequire('igraph')\nrequire('survey')\nrequire('grr')\nlibrary(MASS)\nrequire('numDeriv')\nrequire('mvtnorm')\n\n# load data\nif (TRUE) {\n  load('EK2.RData')\n  Xt_track = readRDS('data_result/Xt_ekf.RDS')\n}\n\n### method 3: to construct Kalman filter\n#EKF = function(Y, f, h, dfdX, dhdX, Q, R, X0, P0)\n# updating R\nif (TRUE) {\n    scale = 10\n    obs.lanes = c(3,22)\n    from.to = cbind(which(S==-1, arr.ind=TRUE)[,1],which(S==1, arr.ind=TRUE)[,1])\n    \n    #input\n    Y=Yt[,obs.lanes]*1\n    f = function(t, X, W=0, Theta) X+S%*%(m.time[cbind(from.to ,min(trunc(t/60)+1,24))]*X[which(S==-1, arr.ind=TRUE)[,1]])\n    h = local(function(t, X, W=0, Theta) C %*% X/scale, envir=list(C=diag(nrow(S))[obs.lanes,]))\n    Q=function(t, X, W, Theta){ S %*% diag(m.time[cbind(from.to ,min(trunc(t/60)+1,24))]*X[which(S==-1, arr.ind=TRUE)[,1]]) %*% t(S) }\n    R= function(t, X, W, Theta) {\n        #R_matrix = diag(length(obs.lanes))*2\n        value = var.obs[abs(X)+1]\n        value = var.obs[pmin( round(abs(X)+2), length(var.obs))]\n        diag(value,length(obs.lanes),length(obs.lanes))\n    }\n    X0=c(Yt[1,]*scale)\n    P0=diag(nrow(S))*.1\n    \n    #EKF\n    K = matrix(0,nrow=length(X0),ncol=ncol(Y)) # Kalman gain\n    mu.update = mu.predict = matrix(0, ncol=length(X0), nrow=nrow(Y))\n    mu.update[1,] = mu.predict[1,] = X0\n    F = P.predict = P.update = array(0, dim=c(length(X0),length(X0),nrow(Y)))\n    P.predict[,,1] = P.update[,,1] = P0\n    dfdX = function(t, X, W, Theta)\n    jacobian(function(X, t, W, Theta) f(t, X, W, Theta), X, t=t, W=W, Theta=Theta)\n    dhdX = function(t, X, W, Theta)\n    jacobian(function(X, t, W, Theta) h(t, X, W, Theta), X, t=t, W=W, Theta=Theta)\n    \n    pred.window = 10\n    pred.time = 1440/pred.window\n    pred.seq = c(1:pred.time-1)*pred.window+2\n    \n    for(i in 2:nrow(Y)){\n        print(i)\n        F[,,i-1] = dfdX(i, mu.update[i-1,])\n        #H = dhdX(i, mu.update[i-1,])\n        mu.predict[i,] = f(i, mu.update[i-1,])\n        #P.predict[,,i] = F[,,i-1] %*% P.update[,,i-1] %*% t(F[,,i-1]) + Q(i, mu.update[i-1,])\n        #K = P.predict[,,i] %*% t(H) %*% ginv( H %*% P.predict[,,i] %*% t(H) + R(i, mu.update[i-1,obs.lanes]))\n        \n        if (i %in% pred.seq) {\n          mu.tmp = Xt_track[i-1,]\n          #P.tmp = P0\n          F[,,i-1] = dfdX(i, mu.tmp)\n          #H = dhdX(i, mu.tmp)\n          mu.predict[i,] = f(i, mu.tmp)\n          #P.predict[,,i] = F[,,i-1] %*% P.tmp %*% t(F[,,i-1]) + Q(i, mu.tmp)\n        }\n        \n        #P.update[,,i] = P.predict[,,i]\n        mu.update[i,] = mu.predict[i,]\n    }\n    \n    xyz = list(mu=mu.update, P=P.update, mu.predict=mu.predict, P.predict=P.predict, F=F)\n    saveRDS(mu.update,file='data_result/Xt_ekf_pred_10.RDS')\n  \n  #test\n  if (FALSE) {\n    plot_lane = 1\n    plot(xyz$P[plot_lane,plot_lane,c(1:1441)],type='l',col='red',log = 'y') \n    \n    load('../../particle_filtering/0_toy/bench_try1/data_exec/Xt_real.RData')\n    time_period = c(1:1441)\n    SMA_scale = 10\n    plot_lane = 1\n    title = paste('EKF observe ',length(obs.lanes),sep=' ')\n    plot(SMA(xyz$mu[time_period,plot_lane],SMA_scale),type='l',col='red',main = title) \n    lines(SMA(Xt_real[time_period,plot_lane],SMA_scale),type='l',col='black')\n    legend('topleft',legend=c('EKF','GT'),col=c('red','black'),lty=c(1,1))\n    \n    name = paste('EKF_ob1&20',plot_lane,sep = '@')\n    name = paste(name,'jpg',sep = '.')\n    dev.copy(file=name, device=jpeg, quality=100, width=1024, height=1024)\n    dev.off()\n  }\n}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "created" : 1473290639279.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1288064937",
+    "id" : "6C2F9A11",
+    "lastKnownWriteTime" : 1473553667,
+    "last_content_update" : 1473553667254,
+    "path" : "~/Documents/R/kalman_filtering/0_toy/KF3_predict.R",
+    "project_path" : "KF3_predict.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

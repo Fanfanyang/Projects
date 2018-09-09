@@ -1,0 +1,18 @@
+# Makefile1
+
+CC=g++
+LFLAGS=-o3
+
+all: 3dbenchslicing 3dbenchpathplanning 3dbenchsupportgeneration
+
+3dbenchslicing: ofs.cc slicing.cc
+	$(CC) $(LFLAGS) ofs.cc slicing.cc -o 3dbenchslicing
+
+3dbenchpathplanning: ofs.cc pathp.cc
+	$(CC) $(LFLAGS) ofs.cc pathp.cc -o 3dbenchpathplanning
+
+3dbenchsupportgeneration: ofs.cc supportg.cc
+	$(CC) $(LFLAGS) ofs.cc supportg.cc -o 3dbenchsupportgeneration
+
+clean: 
+	rm 3dbenchslicing 3dbenchpathplanning 3dbenchsupportgeneration

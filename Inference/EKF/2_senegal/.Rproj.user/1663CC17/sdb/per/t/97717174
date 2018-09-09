@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "library(ggplot2)\nlibrary('Matrix')\nrequire('TTR')\nrequire('igraph')\nrequire('survey')\nrequire('grr')\nlibrary(MASS)\nrequire('numDeriv')\nrequire('mvtnorm')\nrequire('Rcpp')\nsourceCpp('rcpp_prep.cpp')\n\n# pre-processing\nif (TRUE) {\n  network = readRDS('../../particle_filtering/data_download1/ContextData/Senegal_roads.RDS')\n  load('../../particle_filtering/2_Senegal/bench_senegal1/data_prep/tower_dakar.RData')\n  load('../../particle_filtering/2_Senegal/bench_senegal1/data_prep/lane.RData')  #edge number\n  load('../../particle_filtering/2_Senegal/bench_senegal1/data_prep/shortest_path.RData')   #node name\n  \n  #preprocessing\n  lane = unique(unlist(lane))\n  lane=lane-1666\n  node = unique(unlist(shortest_path))\n  node = match(node,as.numeric(rownames(network$n)))\n  node=node[-which(is.na(node))]\n  node = unique(c(node,tower_dakar))\n  e = network$e[lane,]\n  n = network$n[node,]\n  network_dakar = list(n=n,e=e)\n  saveRDS(network_dakar,file='data_prep/network_dakar.RData')\n}\n\n# generate stoichiometry matrix S1 according to real road map\n# row: links column: events\nif (TRUE) {\n  network_dakar = readRDS('data_prep/network_dakar.RData')\n  e = network_dakar$e\n  e$from = as.numeric(levels(e$from))[e$from]\n  e$to = as.numeric(levels(e$to))[e$to]\n  #18219\n  inx = CPInx(e$from,e$to)\n  S = CPS1(e$from,e$to,inx)\n  save(S,file='data_exec/S1.RData')\n}\n\n#generate S2\nif (TRUE) {\n  load('data_exec/m.total.fan.RData')\n  S = CPS2(m.total,68756)\n  save(S,file = 'data_exec/S2.RData')\n}\n\n\n\n\n\n\n\n\n# home:1, work:2, other links 3:25\nS = matrix(0,nrow=25,ncol=43)\ninx = 1\nfor(i in 1:length(e$from)){\n    #   print(i)\n    #   sinfrom = as.integer(e$from[i])\n    sinto = as.integer(e$to[i])\n    for(j in 1:length(e$from)){\n        if (sinto == e$from[j]){\n            S[i+2,inx] = -1\n            S[j+2,inx] = 1\n            inx = inx + 1\n        }\n    }\n}\n# 31 events before, now handle home and work case\nhome = 2 # node value\nwork = 13 # node value\nfor(i in 1:length(e$from)){\n    sinfrom = as.integer(e$from[i])\n    sinto = as.integer(e$to[i])\n    if (sinto == home){  # enter home\n        S[i+2,inx] = -1\n        S[1,inx] = 1\n        inx = inx + 1\n    }\n    if (sinfrom == home){  # leave home\n        S[1,inx] = -1\n        S[i+2,inx] = 1\n        inx = inx + 1\n    }\n    if (sinto == work){  # enter work\n        S[i+2,inx] = -1\n        S[2,inx] = 1\n        inx = inx + 1\n    }\n    if (sinfrom == work){  # leave work\n        S[2,inx] = -1\n        S[i+2,inx] = 1\n        inx = inx + 1\n    }\n}\n\n# initialization 2000 cars in total, observe for 24 hours\n# observations matrix: loc.d, initial state: loc.d[1,]\n# use the simplest event rate as before, derive the vector for each event\nevent_rate = matrix(0, nrow = ncol(S), ncol = 1)\nfor(i in 1:nrow(event_rate)){\n    efrom = match(-1,S[,i])\n    eto = match(1,S[,i])\n    event_rate[i] = m[efrom, eto]\n}\n\nevent_rate.by.time = matrix(0, nrow = ncol(S), ncol = dim(m.by.time)[1]) #@\nfor(i in 1:nrow(event_rate)){\n    efrom = match(-1,S[,i])\n    eto = match(1,S[,i])\n    event_rate.by.time[i,] = c(m.by.time[,efrom, eto])\n}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "created" : 1473010170764.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "439066791",
+    "id" : "97717174",
+    "lastKnownWriteTime" : 1473171095,
+    "last_content_update" : 1473171095969,
+    "path" : "~/Documents/R/kalman_filtering/2_senegal/prep.R",
+    "project_path" : "prep.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

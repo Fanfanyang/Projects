@@ -1,0 +1,18 @@
+# Makefile1
+
+CC=llvm-g++
+#CC=g++
+CFLAGS= -std=c++11
+LFLAGS= -g
+
+#CC=arm-linux-gnueabihf-g++
+#CFLAGS=-c
+#LFLAGS=-static -o3
+
+all: 3dbenchpathplanning
+
+3dbenchpathplanning: clipper.cpp pathp_algorithm2.cc
+	$(CC) $(LFLAGS) clipper.cpp pathp_algorithm2.cc -o 3dbenchpathplanning
+
+clean: 
+	rm 3dbenchpathplanning

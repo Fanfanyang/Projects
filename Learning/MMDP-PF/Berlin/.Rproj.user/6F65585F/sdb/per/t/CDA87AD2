@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "require(XML)  \nlibrary(data.table)\n\n#should\nload('equil_should_be.RData')\n\n#events\ndata = '../Matsim/ITERS/it.100/100.events.xml'\nxml_list = xmlToList(data)\n#a = lapply(xml_list, unlist)\na = lapply(xml_list, as.list)\nxml_data = rbindlist(a,fill = TRUE)\ntype = levels(factor(xml_data$type))\n\n#constructing events\nxml_data$time = type.convert(xml_data$time,'integer')\nxml_data$person = type.convert(xml_data$person,'integer')\nxml_data$link = type.convert(xml_data$link,'integer')\nxml_data$vehicle = type.convert(xml_data$vehicle,'integer')\nxml_data$actType = type.convert(xml_data$actType,'char')\n\na=xml_data[which(xml_data$type == type[1]),]\nactivity.end = data.frame(person=a$person,link=a$link,type=a$actType,time=a$time)\nb = which(xml_data$type == type[2])\na=xml_data[b,]\nactivity.start = data.frame(person=a$person,link=a$link,type=a$actType,time=a$time)\nb = which(xml_data$type == type[5])\na=xml_data[b,]\nlink.enter = data.frame(person=a$person,link=a$link,vehicle=a$vehicle,time=a$time)\nb = which(xml_data$type == type[6])\na=xml_data[b,]\nlink.leave = data.frame(person=a$person,link=a$link,vehicle=a$vehicle,time=a$time)\n\nevents = list(activity.end=activity.end,activity.start=activity.start,link.enter=link.enter,link.leave=link.leave)\nsaveRDS(events,'data_prep/100.events.RDS')\n\n\n\n\n\n\n#road network\nnetwork = '../Matsim/equil/output5/equil/output_network.xml'\nxml_list = xmlToList(network)\n#a = lapply(xml_list, unlist)\n#a = lapply(xml_list, as.list)\n#xml_data = rbindlist(a,fill = TRUE)\n\nn = xml_list$nodes\na = lapply(n, as.list)\nn = rbindlist(a,fill = TRUE)\nn$id = type.convert(n$id,'integer')\nn = n[with(n,order(id)),]\nn = data.frame(x = n$x,y=n$y)\n\ne = xml_list$links\na = lapply(e, unlist)\na = lapply(a, as.list)\ne = rbindlist(a,fill = TRUE)\ne$id = type.convert(e$id,'integer')\ne = e[with(e,order(id)),]\ne = data.frame(from=e$from,to=e$to,length=e$length,lanes=e$permlanes,capacity = e$capacity,freespeed=e$freespeed)\ne = e[1:23,]\n\nn$x = as.numeric(as.character(n$x))\nn$y = as.numeric(as.character(n$y))\ne$from = as.numeric(as.character(e$from))\ne$to = as.numeric(as.character(e$to))\ne$length = as.numeric(as.character(e$length))\ne$lanes = as.numeric(as.character(e$lanes))\ne$capacity = as.numeric(as.character(e$capacity))\ne$freespeed = as.numeric(as.character(e$freespeed))\n\nn = lapply(n, function(x) as.numeric(as.character(x)))\ne = lapply(e, function(x) as.numeric(as.character(x)))\n\nnetwork = list(e=e,n=n)\nsaveRDS(network,'network.RDS')\n\n\n\n\n\n\n\n\n\n\n#plans\n\ndata = '../Matsim/run_160.150.plans_selected.xml'\nxml_list = xmlToList(data)\na = lapply(xml_list, unlist)\na = lapply(a, as.list)\nxml_data = rbindlist(a,fill = TRUE)\n\nb = lapply(xml_list, function(x) x$person$plan$act)\n\n#total: 5229 work, in excel, replace all\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+    "created" : 1478956802281.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4251096092",
+    "id" : "CDA87AD2",
+    "lastKnownWriteTime" : 1478957527,
+    "last_content_update" : 1478957527985,
+    "path" : "~/Documents/R/RL_DrivePlan_0/Berlin/bench_berlin5_100/ReadMatsim.R",
+    "project_path" : "ReadMatsim.R",
+    "properties" : {
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

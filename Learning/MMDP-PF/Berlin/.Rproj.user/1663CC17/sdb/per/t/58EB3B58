@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "\nlibrary('Matrix')\nrequire('TTR')\nrequire('igraph')\nrequire('survey')\nrequire('grr')\nrequire('RcppEigen')\nrequire('Rcpp')\nlibrary(ggplot2)\n\nload(\"data_exec/Xt_real.RData\")\nload(\"data_exec/m.time.RData\")\nload(\"data_exec/obs.matrix.RData\")\nload('data_prep/person.state.d.RData')\nload('data_exec/Yt.RData')\nload('../bench_berlin1/data_result/Xt_est_track_new_obs_all.RData')\nXt_est_track = Xt_est\n\nload('data_exec/Yt.tmp.0911.RData')\nload('data_exec/m.time.4.RData')\n\n# particle fitering\nRunTimes = 3\nobs.scale = 10\nparticles = 1e2\npar_inc = 1\nobs.lanes = c(1:ncol(Xt_real))\n#obs.lanes = c(1276:ncol(Xt_real))\n#time.th = 231-2\ntime.th = 231-180-1\nstep = 1\nsmall.prob = 1e-8\nlane.nums = dim(m.time)[1]\npred.window = 60\npred.times = (nrow(Xt_real)-1)/pred.window\n\nfor(yy in c(1:RunTimes)) {\n    print(yy)\n    Xt_est = array(0,dim=c(nrow(Xt_real),lane.nums))\n    Xi_1 = array(0,dim =c(particles,lane.nums))\n    Xi_2 = array(0,dim =c(particles*par_inc,lane.nums))\n    Xt_est[1,1:ncol(Yt)] = Yt[1,]*obs.scale\n    \n    for (pp in c(1:pred.times)) {\n        t0=1+(pp-1)*pred.window\n        Xi_1 = matrix(rep(Xt_est_track[t0,],each=particles),nrow=particles)\n        Xt_pred = array(0,dim=c(pred.window,ncol(Xt_real)))\n        if (pp==1)\n        Xt_pred[1,] = Xt_est[1,]\n        \n        for(t in c((t0+1):(t0+pred.window))) {\n            print(t)\n          #t1 = min(trunc((t+time.th)/60)-2,23)\n          t1 = min(trunc((t+time.th)/360)+1,4)\n          #t1 = min(trunc((t+time.th)/120)+1,12)\n          #t1 = min(trunc((t-1)/60)+1,24)\n            Xi_2[,] = 0\n            \n            if(TRUE) {\n                Xi_1 = matrix(rep(Xi_1,each=par_inc),ncol=ncol(Xi_1))\n                ndx_lane_from = which(colSums(Xi_1)>0)\n                for(j in ndx_lane_from){\n                    idx = which(m.time[j,,t1]>0)\n                    sample_result = sample.int(length(idx), sum(Xi_1[,j]), replace=TRUE,prob=m.time[j,idx,t1])\n                    ndx = rep(0, length(sample_result))\n                    ndx2 = which(Xi_1[,j]>0)\n                    ndx3 = Xi_1[ndx2,j]\n                    ndx[ cumsum(c(1,head(ndx3,-1))) ] = 1 #diff(c(0,ndx2))\n                    ndx = cumsum(ndx)\n                    Xi_2[ndx2,idx] = Xi_2[ndx2,idx] + matrix(tabulate( ndx+(sample_result-1)*length(ndx2), nbins=length(ndx2)*length(idx) ), nrow=length(ndx2))\n                }\n            }\n            if(TRUE) {\n                Xi_1 = Xi_2\n                Xt_est[t,] = colMeans(Xi_1)\n                Xt_pred[t-t0,] = colMeans(Xi_1)\n                next\n            }\n        }\n        name.file = paste('data_result/pred',pred.window,sep='_')\n        name.file = paste(name.file,'Xt_pred',sep='/')\n        name.file = paste(name.file,pp,sep = '_')\n        name.file = paste(name.file,'RDS',sep = '.')\n        saveRDS(Xt_pred,file = name.file)\n    }\n    name.file = paste('data_result/Xt_est',pred.window,sep='_')\n    name.file = paste(name.file,'RData',sep = '.')\n    save(Xt_est,file=name.file)\n    \n}\n\n#plot\nif (TRUE) {\n    plot_lane = 1\n    time_period=c(1:nrow(Xt_real))\n    SMA_scale = 1\n    plot(SMA(Xt_real[time_period,plot_lane],SMA_scale),type='l',ylim = c())\n    lines(SMA(Xt_est[time_period,plot_lane],SMA_scale),type='l',col='red')\n    lines(SMA(Yt[time_period,plot_lane]*10,SMA_scale),type='l',col='blue')\n    #lines(c(1432:1441),SMA(Xt_pred[,plot_lane],SMA_scale),type='l',col='green')\n}\n\n\n\n\n\n\n\n\n\n",
+    "created" : 1473346542309.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3541968038",
+    "id" : "58EB3B58",
+    "lastKnownWriteTime" : 1473691303,
+    "last_content_update" : 1473691303782,
+    "path" : "~/Documents/R/particle_filtering/1_Berlin/bench_berlin3/exec_pred.R",
+    "project_path" : "exec_pred.R",
+    "properties" : {
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

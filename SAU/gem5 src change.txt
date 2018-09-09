@@ -1,0 +1,65 @@
+
+//————————————————————————————————————————————————————————————————————————
+// Basic
+//————————————————————————————————————————————————————————————————————————
+
+// Introduction
+o3/cpu.hh : Add hardware member
+o3/dyn_inst.hh : Add new member in instruction
+o3/iew_impl.hh : What the instruction will do
+o3/comm.hh : Any backward communication, 1 stage to another
+
+//basic line trace
+o3/cpu.hh, cpu.cc : tick function
+o3/fetch_impl.hh, decode_impl.hh iew_impl.hh, commit_impl.hh : fetch, decode, execute, commit
+base/trace.cc, o3/SConscript : enabling and changing debug flags
+
+//————————————————————————————————————————————————————————————————————————
+// ISE
+//————————————————————————————————————————————————————————————————————————
+
+//instruction extension
+o3/commit_impl.hh : execute new instruction in commitment stage
+o3/dyn_inst.hh : add new member in instruction
+o3/iew_impl.hh : executing instruction
+o3/inst_queue_impl.hh : try to find delay for instruction
+
+//Add new instruction (in src/arch/arm)
+isa/insts/misc.isa : implementation of the new instruction
+isa/formats/data.isa : which assembly opcode is the new instruction
+insts/misc.hh : regregregop
+isa/templates/misc.isa : regregregopdeclare
+
+//Define new instruction latency
+cpu/op_class.hh
+cpu/FuncUnit.py
+cpu/o3/FuncUnitConfig.py  (cpu = detailed)
+cpu/o3/FuPool.py
+configs/cpmmpn/O3_ARM_v7a.py  (cpu = arm_detailed)
+
+// new instruction, when comparing, need to add one mov
+uxtfy
+asm __volatile__ (".byte 0x72; .byte 0x21; .byte 0xf3; .byte 0xe6; mov %0, r2;" : "=r"(d[1]) : "r" (b), "r" (a));
+dqify  //distance queue input
+asm __volatile__ (".byte 0x72; .byte 0x22; .byte 0xf3; .byte 0xe6; mov %0, r2;" : "=r" (data_in[point].value[2]) : "r" (data_in[point].value[2]), "r" (data_in[point].value[2]));
+
+// SIMD modify instruction, vadd.i32  q0, q2, q0; (bits)
+cpu/o3/iew_impl.hh: reference: generated/exec-ns.cc.inc
+
+// SIMD add instruction
+isa/formats/data.isa
+isa/insts/neon.isa
+
+//————————————————————————————————————————————————————————————————————————
+// Distance Queue
+//————————————————————————————————————————————————————————————————————————
+
+isa/insts/misc.isa & isa/formats/data.isa : define new instructions
+o3/cpu.hh : Add new hardware members
+o3/commit_impl.hh : dqify commit will increase DQCounter, dqofy commit will reset all values
+o3/inst_queue_impl.hh : schedule & block, any instruction not ready, just leave it in the instlist instead of adding to addifready. 2 Places to block: addifready (in instlist), scheduleReadyInsts (in readyinsts).
+
+o3/iew_impl.hh : execution stage for ISE instructions, all instruction block signals, Now only serves as communication between cpu and Accelerator
+o3/cpu.cc : tick, what Distance Queue do in every cycle
+
+

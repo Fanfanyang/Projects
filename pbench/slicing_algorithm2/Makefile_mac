@@ -1,0 +1,20 @@
+# Makefile1
+
+CC=llvm-g++
+#CC=g++
+CFLAGS= -std=c++11
+LFLAGS= -g
+
+#CC=arm-linux-gnueabihf-g++
+#CFLAGS=-c
+#LFLAGS=-static -o3
+
+CXXFLAGS = -O2 -lm -lpthread -I/usr/X11R6/include -L/usr/X11R6/lib -lm -lpthread -lX11
+
+all: 3dbenchslicing
+
+3dbenchslicing: slicing_algorithm2.cc
+	$(CC) $(LFLAGS) slicing_algorithm2.cc -o 3dbenchslicing
+
+clean: 
+	rm 3dbenchslicing
