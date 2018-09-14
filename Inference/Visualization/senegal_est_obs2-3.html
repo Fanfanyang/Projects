@@ -1,0 +1,62 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>Senegal</title>
+        <script type="text/javascript" src="http://openlayers.org/api/OpenLayers.js"></script>
+        <style type="text/css">
+            #map {
+                border: 1px solid black
+            }
+        </style>
+        <script type="text/javascript">
+            var map, snapshots1, snapshots2;
+            var th = 21540;
+            var maxtime = 43140;
+            var time = th;
+            var loop = false;
+            
+            window.onload=function(){
+                
+                map = new OpenLayers.Map('map', {projection: new OpenLayers.Projection("EPSG:3857"), displayProjection: new OpenLayers.Projection('EPSG:4326'), maxResolution: 15643.0339, numZoomLevels:18, units: "m",maxExtent: new OpenLayers.Bounds(-20037508,-20037508,20037508,20037508.34)});
+                var osm = new OpenLayers.Layer.OSM('OSM');
+                
+                var links = new OpenLayers.Layer.WMS('Links','/cgi-bin/mapserv',{map:'/home/csgrad/fyang24/public_html_backup_(022817)/senegal/dakar_links.map', layers:'line'},{opacity:0.5, isBaseLayer:false,reproject:false});
+                snapshots1 = new OpenLayers.Layer.WMS('Snapshot','/cgi-bin/mapserv',{map:'/home/csgrad/fyang24/public_html_backup_(022817)/senegal/senegal2/senegal_est.map', layers:'snapshot'},{opacity:0.5, isBaseLayer:false,reproject:false,singleTile:true, ratio:1});
+                snapshots1.mergeNewParams({begin:th, end:th+60})
+                snapshots2 = new OpenLayers.Layer.WMS('Snapshot','/cgi-bin/mapserv',{map:'/home/csgrad/fyang24/public_html_backup_(022817)/senegal/senegal2/senegal_obs.map', layers:'snapshot'},{opacity:0.5, isBaseLayer:false,reproject:false,singleTile:true, ratio:1});
+                snapshots2.mergeNewParams({begin:th, end:th+60})
+                
+                map.addLayers([osm, links, snapshots1, snapshots2]);
+                
+                map.setCenter(new OpenLayers.LonLat(-17.35, 14.7).transform(new OpenLayers.Projection('EPSG:4326'), map.getProjectionObject()), 12);
+                map.addControl(new OpenLayers.Control.LayerSwitcher());
+                map.addControl(new OpenLayers.Control.MousePosition({numDigits: 5 }) );
+            }
+        
+        function update_date_recursive(){
+            time = time+60;
+            if(time>=maxtime+60) return; 
+            //time=maxtime;
+            snapshots1.mergeNewParams({begin:time, end:time+60})
+            snapshots2.mergeNewParams({begin:time, end:time+60})
+            /*var done=0;
+            snapshots2.events.register('loadend', snapshots2)
+            snapshots1.events.register('loadend', snapshots1, function(){ if(done==1) return; else done=1; if(loop) setTimeout(update_date_recursive,100)})*/
+            var done=0; var done1=0; var done2=0;
+            snapshots1.events.register('loadend', snapshots1, function(){ done1=1; if(done==1) return; if(done1==0 | done2==0) return; done=1; if(loop) setTimeout(update_date_recursive,100)})
+            snapshots2.events.register('loadend', snapshots2, function(){ done2=1; if(done==1) return; if(done1==0 | done2==0) return; done=1; if(loop) setTimeout(update_date_recursive,100)})
+
+        }
+        
+        
+        
+            </script>
+    </head>
+    <body>
+        <div id=docs> 
+            <button type="button" onclick="{loop=true; update_date_recursive()}">Play</button>
+            <button type="button" onclick="loop=false">Stop</button>
+        </div>
+        <div id=map></div>
+        <div id=docs></div>
+    </body>
+</html>
